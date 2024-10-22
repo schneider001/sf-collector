@@ -45,6 +45,10 @@ AVRINCPREFIX ?= $(MODPREFIX)/avro/lang/c++/build
 SFINCPREFIX ?= $(MODPREFIX)/sysflow/c++
 FSINCPREFIX ?= $(MODPREFIX)/filesystem/include
 SCHPREFIX ?= $(MODPREFIX)/sysflow/avro/avsc
+XXHASHLOCALPREFIX ?= $(MODPREFIX)/xxHash
+B64LOCALPREFIX ?= $(MODPREFIX)/falco-libs/build/b64
+GLOGLOCALPREFIX ?= $(MODPREFIX)/glog/src
+GLOGLOCALPREFIXB ?= $(MODPREFIX)/glog/build
 ELF_RPATH ?= /usr/lib/sysflow
 DEBUG ?= 0
 ASAN ?= 0
@@ -68,7 +72,11 @@ CFLAGS = -std=c++17 -Wall -I.. -I/usr/local/include/ -I/usr/include/ \
 		 -I$(FALCOINCPREFIX)/userspace/libscap/ \
 		 -I$(FALCOINCPREFIX)/userspace/common/ \
 		 -I$(FALCOINCPREFIX)/userspace/ \
-		 -I$(AVRINCPREFIX)/
+		 -I$(AVRINCPREFIX)/ \
+                 -I$(XXHASHLOCALPREFIX)/ \
+                 -I$(B64LOCALPREFIX)/ \
+                 -I$(GLOGLOCALPREFIX)/ \
+                 -I$(GLOGLOCALPREFIXB)/
 
 OBJS = .sysflowlibs.o .sysflowlibs.o .MurmurHash3.o .utils.o .containercontext.o .processcontext.o .processeventprocessor.o .controlflowprocessor.o .dataflowprocessor.o .networkflowprocessor.o .fileflowprocessor.o .fileeventprocessor.o .sysflowcontext.o .sysflowprocessor.o .sysflowwriter.o .sffilewriter.o .sfsockwriter.o .sfmultiwriter.o .sfcallbackwriter.o .filecontext.o .k8scontext.o .k8seventprocessor.o .modutils.o .sysflowexception.o
 
@@ -96,20 +104,13 @@ all: version $(TARGET)
 install: all
 	mkdir -p $(INSTALL_PATH)/lib && cp libsysflow.a $(INSTALL_PATH)/lib
 	mkdir -p $(INSTALL_PATH)/include/sysflow/ && cp *.h $(INSTALL_PATH)/include/sysflow/ && cp *.hpp $(INSTALL_PATH)/include/sysflow/
+	mkdir -p /usr/lib64 && ln -sf /usr/lib/x86_64-linux-gnu/libboost_iostreams.a /usr/lib64/libboost_iostreams.a
 ifeq ($(BUNDLE_DEPS), 1)
 ifeq ($(MUSL), 0)
+	ln -sf ../../modules/avro/lang/c++/build/libavrocpp_s.a libavrocpp_s.a
 	$(AR) -M <libsysflow.mri
 else
 	$(AR) -M <libsysflow-musl.mri
-	mkdir -p $(ELF_RPATH) && \
-	cp `readlink -f /lib/ld-musl-$(ARCH).so.1` $(ELF_RPATH)/ld-musl-$(ARCH).so.1 && \
-	cp `readlink -f /usr/lib/libstdc++.so.6` $(ELF_RPATH)/libstdc++.so.6 && \
-	cp `readlink -f /usr/lib/libelf.so.1` $(ELF_RPATH)/libelf.so.1 && \
-	cp `readlink -f /usr/lib/libelf.so.1` $(ELF_RPATH)/libelf.so && \
-	cp `readlink -f /usr/lib/libgcc_s.so.1` $(ELF_RPATH)/libgcc_s.so.1 && \
-	cp `readlink -f /lib/libc.musl-$(ARCH).so.1` $(ELF_RPATH)/libc.musl-$(ARCH).so.1 && \
-	cp `readlink -f /lib/libz.so.1` $(ELF_RPATH)/libz.so.1 && \
-	cp `readlink -f /usr/lib/libzstd.so.1` $(ELF_RPATH)/libzstd.so.1
 endif
 	cp libsysflow_with_deps.a $(INSTALL_PATH)/lib
 endif

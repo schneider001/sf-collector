@@ -38,8 +38,9 @@ modules:
 	cd modules && make
 
 .PHONY: sysporter
-sysporter:
-	cd src && make
+sysporter: modules
+	cd src/libs && make install
+	cd src/collector && make
 
 .PHONY: install
 install:

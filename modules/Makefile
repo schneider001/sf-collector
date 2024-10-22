@@ -143,7 +143,9 @@ ifeq ($(BUNDLE_FALCO_LIBS), 1)
 	mv libgrpc++_error_details.a libgrpcpp_error_details.a && \
 	mv libgrpc++_reflection.a libgrpcpp_reflection.a && \
 	mv libgrpc++_unsecure.a libgrpcpp_unsecure.a && \
-	ar -M <falco-libs.$(ARCH).mri && cp libs.a ../lib/
+	ar -M <falco-libs.$(ARCH).mri && \
+	mkdir -p /usr/local/sysflow/modules/lib/falcosecurity/ && \
+	cp libs.a /usr/local/sysflow/modules/lib/falcosecurity/
 endif
 
 .PHONY: falcolibs/install

@@ -48,6 +48,8 @@ SFINCPREFIX ?= $(MODPREFIX)/sysflow/c++
 SFLIBPREFIX ?= $(MODPREFIX)/lib
 FSINCPREFIX ?= $(MODPREFIX)/filesystem/include
 SCHPREFIX ?= $(MODPREFIX)/sysflow/avro/avsc
+GLOGLOCALPREFIX ?= $(MODPREFIX)/glog/src
+GLOGLOCALPREFIXB ?= $(MODPREFIX)/glog/build
 ELF_RPATH ?= /usr/lib/sysflow
 DEBUG ?= 0
 ASAN ?= 0
@@ -55,9 +57,9 @@ MUSL ?= 0
 
 # Compiler options
 CXX = g++
-LIBS = ../libs/libsysflow_with_deps.a -lstdc++ -lz -lssl -lcrypto -lpthread -lm -ldl -lupb -laddress_sorting -lre2 -lcares -lprotobuf -lstdc++fs -lelf
+LIBS = ../libs/libsysflow_with_deps.a -lstdc++ -lz -lunwind -lssl -lcrypto -lpthread -lm -ldl -lupb -laddress_sorting -lre2 -lcares -lprotobuf -lstdc++fs -lelf
 MUSLFLAGS = -Os
-LDFLAGS = $(LIBS) -L$(FALCOLIBPREFIX)/ -L$(AVRLIBPREFIX)/  -L/usr/lib/ 
+LDFLAGS = $(LIBS) -L$(FALCOLIBPREFIX)/ -L$(AVRLIBPREFIX)/ -L/usr/lib/ -L../../modules/falco-libs/build/lib/ 
 CFLAGS = -std=c++17 -Wall -I.. -I../libs/ -I/usr/local/include/ -I/usr/include/ \
 		 -DHAS_CAPTURE -DPLATFORM_NAME=\"Linux\" -DK8S_DISABLE_THREAD \
 		 -I$(SFINCPREFIX)/ \
@@ -70,7 +72,9 @@ CFLAGS = -std=c++17 -Wall -I.. -I../libs/ -I/usr/local/include/ -I/usr/include/ 
 		 -I$(FALCOINCPREFIX)/userspace/libsinsp/ \
 		 -I$(FALCOINCPREFIX)/userspace/libscap/ \
 		 -I$(FALCOINCPREFIX)/userspace/ \
-		 -I$(AVRINCPREFIX)/ 
+		 -I$(AVRINCPREFIX)/ \
+         -I$(GLOGLOCALPREFIX)/ \
+         -I$(GLOGLOCALPREFIXB)/ 
 
 $(info    MUSL is $(MUSL))
 ifeq ($(MUSL), 1)

@@ -17,14 +17,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-INSTALL_PATH?=/usr/local/sysflow
+ARCH=x86_64
+INSTALL_PATH?=../..
 MODPREFIX=$(INSTALL_PATH)/modules
 LIBPREFIX=$(MODPREFIX)/lib
 BINPREFIX=$(MODPREFIX)/bin
 CONFPREFIX=$(MODPREFIX)/conf
 DRIVERPREFIX=/usr/src/falco-
-FALCOINCPREFIX=$(MODPREFIX)/include/falcosecurity
+FALCOINCPREFIX=$(MODPREFIX)/falco-libs/build/include
 FALCOLIBPREFIX=$(LIBPREFIX)/falcosecurity
-AVRINCPREFIX=$(MODPREFIX)/include/avro
-SFINCPREFIX=$(MODPREFIX)/include/sysflow
-FSINCPREFIX=$(MODPREFIX)/include/filesystem
+AVRINCPREFIX=$(MODPREFIX)/avro/lang/c++/build
+SFINCPREFIX=$(MODPREFIX)/sysflow/c++
+FSINCPREFIX=$(MODPREFIX)/filesystem/include
